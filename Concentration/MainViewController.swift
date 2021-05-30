@@ -9,61 +9,57 @@ import UIKit
 
 class MainViewController: UIViewController {
 
-  var emojiTheme = EmojiCollection().rndTheme {
+  var game: GameModel!
+  var emoji = [Int: String]()
+  var emojiTheme: EmojiTheme! { //= EmojiCollection().rndTheme {
     didSet {
       themeLabel.text = "\(emojiTheme.name)  Уровень: \(emojiTheme.level)"
     }
   }
-  var emoji = [Int: String]()
-  
+    
   @IBOutlet var buttonCards: [UIButton]!
   @IBOutlet weak var scoreLabel: UILabel!
   @IBOutlet weak var themeLabel: UILabel!
   
-  lazy var game = GameModel(numberOfPairCards: buttonCards.count / 2 )
+  override func viewDidLoad() {
+    newGameTouch()
+  }
   
   @IBAction func newGameTouch() {
     game = GameModel(numberOfPairCards: buttonCards.count / 2 )
     emojiTheme = EmojiCollection().rndTheme
     emoji.removeAll()
-    faceDownAllCard()
+    updateViewFromModel()
   }
   
   @IBAction func touchButtonCard(_ sender: UIButton) {
-    
     guard let index = buttonCards.firstIndex(of: sender) else { return }
     
     game.choseCard(at: index)
-    updateView(at: index)
+    updateViewFromModel()
   }
   
-  private func faceDownAllCard() {
-    for button in buttonCards {
-      button.setTitle(nil, for: .normal)
-      button.backgroundColor = .orange
-    }
-  }
-  
-  private func updateView(at index: Int) {
-    
-    let button = buttonCards[index]
-    let card = game.cards[index]
-    
-    if !card.isFaceUp {
-      button.setTitle(nil, for: .normal)
-      button.backgroundColor = .orange
-    } else {
+  private func updateViewFromModel() {
+    for index in buttonCards.indices {
+      let button = buttonCards[index]
+      let card = game.cards[index]
       
-      if emoji[card.id] == nil {
-        let rndIndex = emojiTheme.collection.indices.randomElement()
-        emoji[card.id] = emojiTheme.collection.remove(at: rndIndex!)
+      if card.isFaceUp {
+        button.setTitle(getEmoji(at: card), for: .normal)
+        button.backgroundColor = .white
+      } else {
+        button.setTitle(nil, for: .normal)
+        button.backgroundColor = .orange
       }
-      
-      button.setTitle(emoji[card.id], for: .normal)
-      button.backgroundColor = .white
-
     }
-    
+  }
+  
+  private func getEmoji(at card: Card) -> String {
+    if emoji[card.id] == nil,
+       let rndIndex = emojiTheme.collection.indices.randomElement() {
+      emoji[card.id] = emojiTheme.collection.remove(at: rndIndex)
+    }
+    return emoji[card.id] ?? "?"
   }
   
 }
