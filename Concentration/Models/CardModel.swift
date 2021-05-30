@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Card {
+struct Card: Hashable {
   
   static var idFactory = 0
   
@@ -15,13 +15,13 @@ struct Card {
   var isPaired = false
   var id: Int
 
-  static func setID() -> Int {
+  static func getID() -> Int {
     idFactory += 1
     return idFactory
   }
   
   init() {
-    self.id = Self.setID()
+    self.id = Self.getID()
   }
   
 }

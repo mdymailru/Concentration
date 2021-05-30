@@ -35,7 +35,7 @@ class MainViewController: UIViewController {
   @IBAction func touchButtonCard(_ sender: UIButton) {
     guard let index = buttonCards.firstIndex(of: sender) else { return }
     
-    game.choseCard(at: index)
+    game.chooseCard(at: index)
     updateViewFromModel()
   }
   
@@ -51,7 +51,13 @@ class MainViewController: UIViewController {
         button.setTitle(nil, for: .normal)
         button.backgroundColor = .orange
       }
+      
+      if card.isPaired {
+        button.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+      }
     }
+    
+    scoreLabel.text = "Счет: \(game.countPair)"
   }
   
   private func getEmoji(at card: Card) -> String {
