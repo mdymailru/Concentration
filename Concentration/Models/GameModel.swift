@@ -11,50 +11,52 @@ class GameModel {
   
   var cards = [Card]()
   var score = 0
-  
   var countPair = 0
+  var maxPair: Int
   
   private var clickedCards = Set<Int>()
   private var indexOfOneFaceUpCard: Int?
-  private var clicksIndices = [Int]()
-  
+  private var choosedCardIndex: Int = 0
+   
   func chooseCard(at index: Int) {
-    clicksIndices.insert(index, at: 0)
-    if !(cards[index].isPaired || cards[index].isFaceUp) {      //don't touch paired and faceUp cards
+    choosedCardIndex = index
+    if countPair == maxPair { console("END") }
     
-            
+    if !(cards[index].isPaired) {                               //don't touch paired and faceUp cards
+                
       if let matchedIndex = indexOfOneFaceUpCard,
                 index != matchedIndex {                         //one card for matching
-        console("Была открыта одна карта ранее. Нада проверить совпадение")
+        console("Была открыта одна карта ранее. Надо проверить совпадение.")
         
         if cards[index].id == cards[indexOfOneFaceUpCard!].id { // this is pair
            cards[index].isPaired = true
            cards[matchedIndex].isPaired = true
-           console("Совпадение с ранее открытой")
+           
            countPair += 1
            score += 2
+           console("Совпадение с ранее открытой.")
         } else {
-           console("Не совпала с ранее открытой")
-           score += clickedCards.insert(index).inserted ? 0 : -1
+           
+          score += clickedCards.insert(index).inserted ? 0 : -1
+          clickedCards.forEach{print("\($0):\(cards[$0].id)")}
+          console("Не совпала с ранее открытой.")
         }
         cards[index].isFaceUp = true
         indexOfOneFaceUpCard = nil
         console("",3)
       } else {                                                 //no cards faceUp or 2
         
-        if clicksIndices.prefix(2).count > 1,
-           index == clicksIndices.prefix(2).last {
-          console("Был клик по той же карте")
+        if !cards[index].isFaceUp {
+          score += clickedCards.insert(index).inserted ? 0 : -1
         }
-        
         cards.indices.forEach { cards[$0].isFaceUp = false }
         
         cards[index].isFaceUp = true
         indexOfOneFaceUpCard = index
         
-        score += clickedCards.insert(index).inserted ? 0 : -1
+        clickedCards.forEach{print("\($0):\(cards[$0].id)")}
         
-        console("Было открыто Ни одной или две.",2)
+        console("Было открыто или ни одной или две.",2)
       }
     }
   }
@@ -66,14 +68,14 @@ class GameModel {
       case 0: str += "\(message)"
       case 1:
         str += "\(message)\n"
-        str += "index: \(clicksIndices.last!)\n"
+        str += "index: \(choosedCardIndex)\n"
         str += "matchedIndex: \(indexOfOneFaceUpCard ?? -1)"
       case 2:
         str += "\(message)\n"
-        str += "index: \(clicksIndices.last!)\n"
+        str += "index: \(choosedCardIndex)\n"
         str += "matchedIndex: \(indexOfOneFaceUpCard ?? -1)\n"
       default:
-        str += "index: \(clicksIndices.last!)\n"
+        str += "index: \(choosedCardIndex)\n"
         str += "matchedIndex: \(indexOfOneFaceUpCard ?? -1)\n"
     }
     
@@ -81,6 +83,7 @@ class GameModel {
   }
   
   init(numberOfPairCards number: Int) {
+    maxPair = number
     
     for _ in 1...number {
       let card = Card()

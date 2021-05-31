@@ -22,19 +22,38 @@ class MainViewController: UIViewController {
   @IBOutlet weak var themeLabel: UILabel!
   
   override func viewDidLoad() {
-    newGameTouch()
+    initGame()
   }
   
-  @IBAction func newGameTouch() {
+  private func initGame() {
     game = GameModel(numberOfPairCards: buttonCards.count / 2 )
     emojiTheme = EmojiCollection().rndTheme
     emoji.removeAll()
     updateViewFromModel()
   }
   
+  private func newGameShowAlert() {
+    let alert = UIAlertController(title: nil,
+                                message: "ИГРА ЗАВЕРШЕНА",
+                         preferredStyle: .actionSheet)
+    
+    let newGameAlertButton = UIAlertAction(title: "Новая Игра", style: .default, handler: { _ in self.initGame() })
+    let canсelAlertButton = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+    alert.addAction(newGameAlertButton)
+    alert.addAction(canсelAlertButton)
+    
+    present(alert, animated: true, completion: nil)
+    
+  }
+  
+  @IBAction func newGameTouch() {
+      newGameShowAlert()
+  }
+  
   @IBAction func touchButtonCard(_ sender: UIButton) {
     guard let index = buttonCards.firstIndex(of: sender) else { return }
     
+    if game.countPair == game.maxPair { newGameShowAlert() }
     game.chooseCard(at: index)
     updateViewFromModel()
   }
@@ -47,13 +66,17 @@ class MainViewController: UIViewController {
       if card.isFaceUp {
         button.setTitle(getEmoji(at: card), for: .normal)
         button.backgroundColor = .white
+//        button.setBackgroundImage(nil, for: .normal)
       } else {
         button.setTitle(nil, for: .normal)
         button.backgroundColor = .orange
+//        let image = UIImage(named: "mdy")
+//        button.setBackgroundImage(image, for: .normal)
       }
       
       if card.isPaired {
         button.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+//        button.setBackgroundImage(nil, for: .normal)
       }
     }
     

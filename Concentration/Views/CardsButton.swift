@@ -13,6 +13,9 @@ class CardsButton: UIButton {
     self.layer.cornerRadius = self.frame.size.height / 22
     self.backgroundColor = .orange
     
+//    let image = UIImage(named: "mdy")
+//    self.setImage(image, for: .normal)
+    
   }
 
 }
