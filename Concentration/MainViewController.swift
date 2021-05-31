@@ -57,7 +57,7 @@ class MainViewController: UIViewController {
       }
     }
     
-    scoreLabel.text = "Счет: \(game.countPair)"
+    scoreLabel.text = "Счет: \(game.score)/\(game.countPair)"
   }
   
   private func getEmoji(at card: Card) -> String {
